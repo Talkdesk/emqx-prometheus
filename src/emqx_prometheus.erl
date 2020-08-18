@@ -71,8 +71,8 @@ start_link(PushGateway, Interval) ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [PushGateway, Interval], []).
 
 init([PushGateway, Interval]) ->
-    Ref = erlang:start_timer(Interval, self(), ?TIMER_MSG),
-    {ok, #state{timer = Ref, push_gateway = PushGateway, interval = Interval}}.
+    % Ref = erlang:start_timer(Interval, self(), ?TIMER_MSG),
+    {ok, #state{timer = nil, push_gateway = PushGateway, interval = Interval}}.
 
 handle_call(_Msg, _From, State) ->
     {noreply, State}.
