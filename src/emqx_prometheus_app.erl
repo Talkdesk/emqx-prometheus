@@ -21,17 +21,23 @@
 -emqx_plugin(?MODULE).
 
 %% Application callbacks
--export([ start/2
-        , stop/1
-        ]).
+-export([start/2, stop/1]).
 
 -define(APP, emqx_prometheus).
 
 start(_StartType, _StartArgs) ->
-    PushGateway = application:get_env(?APP, push_gateway, "http://127.0.0.1:9091"),
-    Interval = application:get_env(?APP, interval, 5000),
-    emqx_prometheus_sup:start_link(PushGateway, Interval).
+  {Port, []} = string:to_integer(os:getenv("EMQX_PROMETHEUS_LISTENER_PORT", "8080")),
+  application:set_env(?APP, listener_port, Port),
+  Handlers = [{"/", minirest:handler(#{apps => [?APP], modules => [emqx_prometheus]}), []}],
+  Dispatch = [{"/[...]", minirest, Handlers}],
+  minirest:start_http(emqx_prometheus_http_server,
+                      #{socket_opts => [{port, Port}]},
+                      Dispatch),
+  PushGateway = application:get_env(?APP, push_gateway, "http://127.0.0.1:9091"),
+  Interval = application:get_env(?APP, interval, 5000),
+  emqx_prometheus_sup:start_link(PushGateway, Interval).
 
 stop(_State) ->
-    ok.
+  minirest:stop_http(emqx_prometheus_http_server),
+  ok.
 

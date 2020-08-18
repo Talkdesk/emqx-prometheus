@@ -65,7 +65,7 @@
 -record(state, {push_gateway, timer, interval}).
 
 stats(_Bindings, Params) ->
-    collect(proplists:get_value(<<"type">>, Params, <<"json">>)).
+    collect(proplists:get_value(<<"type">>, Params, <<"prometheus">>)).
 
 start_link(PushGateway, Interval) ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [PushGateway, Interval], []).
