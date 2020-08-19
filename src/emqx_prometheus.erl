@@ -27,7 +27,7 @@
 
 -rest_api(#{name   => stats,
             method => 'GET',
-            path   => "/emqx_prometheus",
+            path   => "/metrics",
             func   => stats,
             descr  => "Get emqx all stats info"
            }).
