@@ -26,6 +26,8 @@
 -define(APP, emqx_prometheus).
 
 start(_StartType, _StartArgs) ->
+  prometheus_registry:register_collector(prometheus_process_collector),
+
   {Port, []} = string:to_integer(os:getenv("EMQX_PROMETHEUS_LISTENER_PORT", "8080")),
   application:set_env(?APP, listener_port, Port),
   Handlers = [{"/", minirest:handler(#{apps => [?APP], modules => [emqx_prometheus]}), []}],
