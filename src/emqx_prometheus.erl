@@ -71,6 +71,7 @@ start_link(PushGateway, Interval) ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [PushGateway, Interval], []).
 
 init([PushGateway, Interval]) ->
+    prometheus_registry:register_collector(prometheus_process_collector),
     % Ref = erlang:start_timer(Interval, self(), ?TIMER_MSG),
     {ok, #state{timer = nil, push_gateway = PushGateway, interval = Interval}}.
 
